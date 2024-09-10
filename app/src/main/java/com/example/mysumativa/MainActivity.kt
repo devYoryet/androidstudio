@@ -2,11 +2,13 @@ package com.example.mysumativa
 
 import android.content.Context
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.compose.rememberNavController
 import com.example.mysumativa.navigation.NavGraph
 import com.example.mysumativa.ui.theme.MysumativaTheme
+import java.util.*
 
 class MainActivity : ComponentActivity() {
 
@@ -15,12 +17,22 @@ class MainActivity : ComponentActivity() {
         Triple("juan.perez", "juan.perez@example.com", "password123"),
         Triple("maria.lopez", "maria.lopez@example.com", "password456"),
         Triple("carlos.sanchez", "carlos.sanchez@example.com", "password789"),
-        Triple("ana.garcia", "ana.garcia@example.com", "passwordabc"),
-        Triple("rodrigo.torres", "rodrigo.torres@example.com", "passworddef")
+        Triple("ana.garcia", "ana.garcia@example.com", "passwordabc11"),
+        Triple("rodrigo.torres", "rodrigo.torres@example.com", "passworddef11")
     )
+
+    // Instancia de Text-to-Speech
+    private lateinit var tts: TextToSpeech
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Inicializar TextToSpeech
+        tts = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts.language = Locale.getDefault()
+            }
+        }
 
         // Cargar usuarios desde SharedPreferences y combinarlos con los predefinidos
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
@@ -30,8 +42,8 @@ class MainActivity : ComponentActivity() {
             MysumativaTheme {
                 // Inicializar el NavController para manejar la navegación
                 val navController = rememberNavController()
-                // Pasar la lista de usuarios al gráfico de navegación
-                NavGraph(navController = navController, users = users)
+                // Pasar la lista de usuarios y TextToSpeech al gráfico de navegación
+                NavGraph(navController = navController, users = users, tts = tts) // Pasar tts
             }
         }
     }
@@ -62,5 +74,11 @@ class MainActivity : ComponentActivity() {
         // Guardar el conjunto de usuarios actualizado en SharedPreferences
         editor.putStringSet("users", currentUsers)
         editor.apply()
+    }
+
+    // Limpiar Text-to-Speech al destruir la actividad
+    override fun onDestroy() {
+        tts.shutdown() // Cierra TTS para liberar recursos
+        super.onDestroy()
     }
 }
