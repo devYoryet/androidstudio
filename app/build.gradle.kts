@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -8,7 +9,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.mysumativa"
+            applicationId = "com.example.mysumativa"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -66,6 +67,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
 
+
     // Dependencias adicionales necesarias para el proyecto
     implementation(libs.androidx.core.ktx.v1120) // Para Text-to-Speech (TTS)
     implementation(libs.coil.compose) // Para cargar imágenes en Compose
@@ -75,7 +77,14 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.firebase.firestore.ktx) // Implementación de Firestore
+   // implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.gson) // Implementar Gson desde libs.versions.toml
 
+    implementation(platform(libs.firebase.bom))  // Firebase BOM
+    implementation(libs.firebase.auth.ktx)       // Firebase Authentication
+    implementation(libs.firebase.database.ktx)   // Firebase Realtime Database
     // Pruebas
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -86,4 +95,6 @@ dependencies {
     // Herramientas para el modo de depuración
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+
 }
