@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "463864405265",
+    "project_id": "android-a1888",
+    "storage_bucket": "android-a1888.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:463864405265:android:3738e3713be67f567b80b0",
+        "android_client_info": {
+          "package_name": "com.example.mysumativa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6jRpSzJUXgeJCSuALncRhE0fOwx4iRuA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
