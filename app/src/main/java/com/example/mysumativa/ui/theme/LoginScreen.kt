@@ -26,10 +26,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.mysumativa.R
 import androidx.compose.ui.layout.ContentScale
+import com.example.mysumativa.MainActivity
+
+import kotlinx.coroutines.launch
+
+import androidx.compose.runtime.rememberCoroutineScope
+import com.example.mysumativa.firebase.checkUserExists
+
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LoginScreen(navController: NavController, users: MutableList<Triple<String, String, String>>) {
+fun LoginScreen(navController: NavController, mainActivity: MainActivity) {
     // Caja principal que ocupa todo el tamaño de la pantalla
     Box(modifier = Modifier.fillMaxSize()) {
         // Fondo de pantalla con la imagen de papas fritas
@@ -43,10 +50,10 @@ fun LoginScreen(navController: NavController, users: MutableList<Triple<String, 
 
         val context = LocalContext.current
         val keyboardController = LocalSoftwareKeyboardController.current
+        val coroutineScope = rememberCoroutineScope()
 
         // Función para hacer vibrar el dispositivo cuando hay un error
         fun vibrate() {
-            // Obtener el Vibrator o VibratorManager según la versión de Android
             val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                 val vibratorManager = context.getSystemService(VibratorManager::class.java)
                 vibratorManager.defaultVibrator
@@ -54,7 +61,6 @@ fun LoginScreen(navController: NavController, users: MutableList<Triple<String, 
                 context.getSystemService(Vibrator::class.java)
             }
 
-            // Si el Vibrator está disponible, iniciar la vibración
             vibrator?.let {
                 Log.d("VibrationTest", "Vibration triggered")
                 it.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
@@ -72,15 +78,13 @@ fun LoginScreen(navController: NavController, users: MutableList<Triple<String, 
                     })
                 }
         ) {
-            // Columna para organizar los elementos de la pantalla
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.Center, // Centrar los elementos verticalmente
-                horizontalAlignment = Alignment.CenterHorizontally // Centrar los elementos horizontalmente
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Variables para almacenar el correo y la contraseña ingresados
                 val email = remember { mutableStateOf("") }
                 val password = remember { mutableStateOf("") }
                 var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -89,114 +93,113 @@ fun LoginScreen(navController: NavController, users: MutableList<Triple<String, 
                 Image(
                     painter = painterResource(id = R.drawable.ic_launcher_foreground),
                     contentDescription = "Logo de la aplicación",
-                    modifier = Modifier.size(120.dp) // Tamaño del logo
+                    modifier = Modifier.size(120.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp)) // Espacio entre el logo y el siguiente elemento
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Mostrar mensaje de error si existe
                 errorMessage?.let {
-                    Text(it, color = MaterialTheme.colorScheme.error) // Texto del mensaje de error en color rojo
-                    Spacer(modifier = Modifier.height(8.dp)) // Espacio entre el mensaje de error y el siguiente elemento
+                    Text(it, color = MaterialTheme.colorScheme.error)
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 // Campo de texto para ingresar el correo electrónico
                 OutlinedTextField(
                     value = email.value,
-                    onValueChange = { email.value = it }, // Actualizar el valor cuando el usuario escribe
-                    label = { Text("Correo electrónico") }, // Etiqueta del campo de texto
+                    onValueChange = { email.value = it },
+                    label = { Text("Correo electrónico") },
                     modifier = Modifier
-                        .fillMaxWidth() // Ocupa todo el ancho disponible
-                        .padding(horizontal = 16.dp), // Padding horizontal de 16dp
-                    shape = MaterialTheme.shapes.small, // Esquinas redondeadas pequeñas
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = MaterialTheme.shapes.small,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Color del borde cuando está enfocado
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface, // Color del borde cuando no está enfocado
-                        containerColor = Color.White // Campo de texto blanco
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
+                        containerColor = Color.White
                     )
                 )
 
-                Spacer(modifier = Modifier.height(8.dp)) // Espacio entre los campos de texto
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Campo de texto para ingresar la contraseña
                 OutlinedTextField(
                     value = password.value,
-                    onValueChange = { password.value = it }, // Actualizar el valor cuando el usuario escribe
-                    label = { Text("Contraseña") }, // Etiqueta del campo de texto
-                    visualTransformation = PasswordVisualTransformation(), // Ocultar el texto de la contraseña con asteriscos
+                    onValueChange = { password.value = it },
+                    label = { Text("Contraseña") },
+                    visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier
-                        .fillMaxWidth() // Ocupa todo el ancho disponible
-                        .padding(horizontal = 16.dp), // Padding horizontal de 16dp
-                    shape = MaterialTheme.shapes.small, // Esquinas redondeadas pequeñas
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = MaterialTheme.shapes.small,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary, // Color del borde cuando está enfocado
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface, // Color del borde cuando no está enfocado
-                        containerColor = Color.White // Campo de texto blanco
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface,
+                        containerColor = Color.White
                     )
                 )
 
-                Spacer(modifier = Modifier.height(16.dp)) // Espacio entre los campos de texto y el botón
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Botón para iniciar sesión
                 Button(
                     onClick = {
-                        val userExists = users.any { it.second == email.value && it.third == password.value }
-                        if (userExists) {
-                            keyboardController?.hide() // Ocultar el teclado si la autenticación es exitosa
-                            navController.navigate("welcome") // Navegar a la pantalla de bienvenida
-                        } else {
-                            errorMessage = "Correo o contraseña incorrectos" // Mostrar mensaje de error si la autenticación falla
-                            vibrate() // Hacer vibrar el dispositivo si la autenticación falla
+                        // Llamamos a la función checkUserExists en una corrutina
+                        coroutineScope.launch {
+                            val userExists = checkUserExists(email.value, password.value)
+                            if (userExists) {
+                                keyboardController?.hide()
+                                navController.navigate("welcome") // Navegar a la pantalla de bienvenida
+                            } else {
+                                errorMessage = "Correo o contraseña incorrectos"
+                                vibrate() // Hacer vibrar el dispositivo si la autenticación falla
+                            }
                         }
                     },
                     modifier = Modifier
-                        .fillMaxWidth() // Ocupa todo el ancho disponible
-                        .padding(horizontal = 16.dp), // Padding horizontal de 16dp
-                    shape = MaterialTheme.shapes.medium, // Esquinas redondeadas medianas
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Black, // Botón negro
-                        contentColor = MaterialTheme.colorScheme.onPrimary // Texto en color claro
+                        containerColor = Color.Black,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Text("Iniciar Sesión")
                 }
 
-                Spacer(modifier = Modifier.height(24.dp)) // Espacio antes de los botones de registro y recuperación
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // Fila con botones para registrar o recuperar contraseña
                 Row(
-                    horizontalArrangement = Arrangement.Center, // Centrados horizontalmente
-                    verticalAlignment = Alignment.CenterVertically, // Centrados verticalmente
-                    modifier = Modifier.fillMaxWidth() // Ocupa todo el ancho disponible
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     TextButton(onClick = { navController.navigate("registro") }) {
                         Text(
                             "Registrar",
                             style = MaterialTheme.typography.bodyLarge.copy(
-                                fontSize = 18.sp, // Tamaño de fuente de 18sp
-                                color = Color.Black, // Texto negro
-                                fontWeight = FontWeight.Bold // Texto en negrita
+                                fontSize = 18.sp,
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
                             )
                         )
                     }
 
-                    // Separador visual entre los botones
-                    Text(
-                        " | ",
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontSize = 18.sp, // Tamaño de fuente de 18sp
-                            color = Color.Black, // Texto negro
-                            fontWeight = FontWeight.Bold // Texto en negrita
-                        )
-                    )
+                    Text(" | ", style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 18.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    ))
 
                     TextButton(onClick = { navController.navigate("recuperar") }) {
                         Text(
                             "¿Olvidé Password?",
                             style = MaterialTheme.typography.bodyLarge.copy(
-                                fontSize = 18.sp, // Tamaño de fuente de 18sp
-                                color = Color.Black, // Texto negro
-                                fontWeight = FontWeight.Bold // Texto en negrita
+                                fontSize = 18.sp,
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
                             )
                         )
                     }
