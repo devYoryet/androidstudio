@@ -14,6 +14,13 @@ composeBom = "2024.04.01"
 material = "1.7.0"
 navigationCompose = "2.7.7"
 uiToolingPreview = "1.7.0"
+firebaseBom = "32.2.0"         # Firebase BOM
+firebaseAuthKtx = "21.1.0"     # Firebase Authentication
+firebaseDatabaseKtx = "20.2.2" # Versión correcta de Firebase Realtime Database
+firebaseStorageKtx = "20.1.0" # Asegúrate de tener esta versión o la más reciente
+googleServicesVersion = "4.3.10" # Plugin Google Services
+gson = "2.8.9" # Versión de Gson
+firebaseFirestoreKtx = "24.5.0" # Firestore KTX para la integración
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,8 +45,17 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
+
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServicesVersion" } # Plugin Google Services
 
