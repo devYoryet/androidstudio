@@ -87,7 +87,7 @@ fun WelcomeScreen(navController: NavController, tts: TextToSpeech) {
                     icon = painterResource(id = R.drawable.cart_icon),
                     label = "Mi Pedido",
                     onClick = {
-                        navController.navigate("mi_pedido")
+                        navController.navigate("welcome_pedido")
                     },
                     iconSize = 100.dp // Aumento de tamaño
                 )
@@ -96,7 +96,7 @@ fun WelcomeScreen(navController: NavController, tts: TextToSpeech) {
                     icon = painterResource(id = R.drawable.delivery_icon),
                     label = "Delivery",
                     onClick = {
-                        navController.navigate("pedido_tipo")
+                        navController.navigate("welcome_delivery")
                     },
                     iconSize = 100.dp // Aumento de tamaño
                 )

@@ -1,6 +1,7 @@
 package com.example.mysumativa.ui.components
 
 import androidx.compose.foundation.layout.*
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,7 +15,7 @@ fun ProductCard(productName: String, productPrice: String, onAddClick: () -> Uni
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(), // Llenar el ancho de la pantalla
+            .fillMaxWidth(),
         elevation = 4.dp
     ) {
         Row(
@@ -30,10 +31,10 @@ fun ProductCard(productName: String, productPrice: String, onAddClick: () -> Uni
             // Botón de agregar
             IconButton(onClick = onAddClick) {
                 Icon(
-                    painter = painterResource(id = R.drawable.add_icon), // Asegúrate de tener este ícono
+                    painter = painterResource(id = R.drawable.add_icon),
                     contentDescription = "Agregar",
                     tint = Color.Yellow,
-                    modifier = Modifier.size(40.dp) // Ajusta el tamaño del ícono
+                    modifier = Modifier.size(40.dp)
                 )
             }
         }

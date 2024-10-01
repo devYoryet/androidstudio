@@ -4,29 +4,35 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mysumativa.ui.components.ProductCard
+import com.example.mysumativa.ui.screens.viewmodels.CartaViewModel
 
 @Composable
-fun SelectSalsaScreen(navController: NavController) {
+fun SelectSalsaScreen(navController: NavController, viewModel: CartaViewModel = viewModel()) {
+    // Obtener el estado de cartaItems directamente
+    val cartaItemsState = viewModel.cartaItems.collectAsState()
+
+    // Acceder al valor de la lista directamente
+    val cartaItems = cartaItemsState.value
+    val salsaItems = cartaItems.filter { it.idCategoria == "Salsas" }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = "Selecciona el tamaño de tu salsa", style = MaterialTheme.typography.h5)
+        Text(text = "Selecciona tu salsa", style = MaterialTheme.typography.h5)
 
-        ProductCard(productName = "Salsa (G)", productPrice = "$800") {
-            navController.navigate("select_salsa_type")
-        }
-        ProductCard(productName = "Salsa (M)", productPrice = "$1.000") {
-            navController.navigate("select_salsa_type")
-        }
-        ProductCard(productName = "Salsa (XG)", productPrice = "$1.200") {
-            navController.navigate("select_salsa_type")
+        // Mostramos los productos de la categoría Salsas
+        salsaItems.forEach { item ->
+            ProductCard(productName = item.nombre, productPrice = "${item.precio}") {
+                navController.navigate("select_salsa_type")
+            }
         }
     }
 }

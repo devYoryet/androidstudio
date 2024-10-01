@@ -20,7 +20,9 @@ firebaseDatabaseKtx = "20.2.2" # Versión correcta de Firebase Realtime Database
 firebaseStorageKtx = "20.1.0" # Asegúrate de tener esta versión o la más reciente
 googleServicesVersion = "4.3.10" # Plugin Google Services
 gson = "2.8.9" # Versión de Gson
-firebaseFirestoreKtx = "24.5.0" # Firestore KTX para la integración
+firebaseFirestoreKtx = "24.5.0"
+playServicesMaps = "19.0.0"
+maps = "3.1.0-beta" # Firestore KTX para la integración
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,7 +54,8 @@ firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
-
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+maps = { group = "com.google.android.libraries.maps", name = "maps", version.ref = "maps" }
 [plugins]
 
 android-application = { id = "com.android.application", version.ref = "agp" }

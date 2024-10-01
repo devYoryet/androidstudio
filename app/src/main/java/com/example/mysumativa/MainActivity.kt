@@ -8,38 +8,53 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mysumativa.navigation.NavGraph
 import com.example.mysumativa.ui.theme.MysumativaTheme
 import java.util.*
+import android.util.Log
+class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
 
-class MainActivity : ComponentActivity() {
-
-    // Instancia de Text-to-Speech
-    private lateinit var tts: TextToSpeech
+    private var tts: TextToSpeech? = null
+    private var isTtsInitialized = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Inicializar TextToSpeech
-        tts = TextToSpeech(this) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                tts.language = Locale.getDefault()
-            }
-        }
+        tts = TextToSpeech(this, this)
 
         setContent {
-            MysumativaTheme {
-                val navController = rememberNavController()
-                // Aquí pasamos la instancia de MainActivity
-                NavGraph(
-                    navController = navController,
-                    mainActivity = this@MainActivity,  // Pasamos la instancia de MainActivity
-                    tts = tts
-                )
-            }
+            val navController = rememberNavController()
+            NavGraph(navController = navController, mainActivity = this, tts = tts!!)
         }
     }
 
-    // Limpiar Text-to-Speech al destruir la actividad
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            // Cambiar el idioma a español
+            val result = tts?.setLanguage(Locale("es", "ES"))
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "El idioma seleccionado no es soportado.")
+            } else {
+                isTtsInitialized = true
+            }
+        } else {
+            Log.e("TTS", "Inicialización del TextToSpeech fallida.")
+        }
+    }
+
     override fun onDestroy() {
-        tts.shutdown() // Cierra TTS para liberar recursos
+        // Libera los recursos de TextToSpeech al destruir la actividad
+        tts?.let {
+            it.stop()
+            it.shutdown()
+        }
         super.onDestroy()
     }
+
+    fun speakText(text: String) {
+        if (isTtsInitialized && tts != null) {
+            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+        } else {
+            Log.e("TTS", "TextToSpeech no está inicializado.")
+        }
+    }
 }
+

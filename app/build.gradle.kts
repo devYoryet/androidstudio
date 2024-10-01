@@ -66,8 +66,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
-
-
+// Lottie para animaciones
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
     // Dependencias adicionales necesarias para el proyecto
     implementation(libs.androidx.core.ktx.v1120) // Para Text-to-Speech (TTS)
     implementation(libs.coil.compose) // Para cargar imágenes en Compose
@@ -78,13 +78,17 @@ dependencies {
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.firebase.firestore.ktx) // Implementación de Firestore
-   // implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
     implementation(libs.firebase.storage.ktx)
     implementation(libs.gson) // Implementar Gson desde libs.versions.toml
 
     implementation(platform(libs.firebase.bom))  // Firebase BOM
     implementation(libs.firebase.auth.ktx)       // Firebase Authentication
-    implementation(libs.firebase.database.ktx)   // Firebase Realtime Database
+    implementation(libs.firebase.database.ktx)
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.android.gms:play-services-maps:18.0.2")
+    implementation("com.google.maps.android:maps-compose:2.11.0")
+
     // Pruebas
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -1,18 +1,26 @@
 package com.example.mysumativa.ui.screens
 
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.mysumativa.ui.components.ProductCard
+import com.example.mysumativa.ui.screens.viewmodels.CartaViewModel
 
 @Composable
-fun SelectPapasScreen(navController: NavController) {
+fun SelectPapasScreen(navController: NavController, viewModel: CartaViewModel = viewModel()) {
+    // Obtener el estado de cartaItems directamente
+    val cartaItemsState = viewModel.cartaItems.collectAsState()
+
+    // Acceder al valor de la lista directamente
+    val cartaItems = cartaItemsState.value
+    val papasItems = cartaItems.filter { it.idCategoria == "Papas Fritas" }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -20,15 +28,11 @@ fun SelectPapasScreen(navController: NavController) {
     ) {
         Text(text = "Selecciona el tamaño de tus papas", style = MaterialTheme.typography.h5)
 
-        // Tarjetas para seleccionar el tamaño de las papas
-        ProductCard(productName = "Papas (G)", productPrice = "$3.500") {
-            navController.navigate("select_salsa")
-        }
-        ProductCard(productName = "Papas (M)", productPrice = "$4.000") {
-            navController.navigate("select_salsa")
-        }
-        ProductCard(productName = "Papas (XG)", productPrice = "$4.500") {
-            navController.navigate("select_salsa")
+        // Mostramos los productos de la categoría Papas Fritas
+        papasItems.forEach { item ->
+            ProductCard(productName = item.nombre, productPrice = "${item.precio}") {
+                navController.navigate("select_salsa")
+            }
         }
     }
 }
