@@ -37,6 +37,18 @@ fun WelcomeDeliveryScreen(navController: NavController) {
     // Para mostrar la dirección georreferencial
     var currentLocation by remember { mutableStateOf<String?>(null) }
 
+    // Estado para manejar si los permisos han sido concedidos
+    val locationPermissionGranted = remember { mutableStateOf(false) }
+
+    // Solicitar permisos de ubicación cuando la pantalla se carga
+    LaunchedEffect(Unit) {
+        if (!checkLocationPermissions(context)) {
+            requestLocationPermissions(context)
+        } else {
+            locationPermissionGranted.value = true
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,10 +90,14 @@ fun WelcomeDeliveryScreen(navController: NavController) {
                 // Botón para obtener la ubicación actual
                 Button(
                     onClick = {
-                        scope.launch {
-                            requestLocation(context, fusedLocationClient) { address ->
-                                currentLocation = address
+                        if (locationPermissionGranted.value) {
+                            scope.launch {
+                                requestLocation(context, fusedLocationClient) { address ->
+                                    currentLocation = address
+                                }
                             }
+                        } else {
+                            Toast.makeText(context, "Permisos de ubicación no concedidos", Toast.LENGTH_SHORT).show()
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -125,13 +141,34 @@ fun WelcomeDeliveryScreen(navController: NavController) {
     )
 }
 
+// Función para verificar si los permisos han sido concedidos
+private fun checkLocationPermissions(context: Context): Boolean {
+    return ActivityCompat.checkSelfPermission(
+        context, Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                context, Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+}
+
+// Función para solicitar permisos
+private fun requestLocationPermissions(context: Context) {
+    val activity = context as? android.app.Activity
+    activity?.let {
+        ActivityCompat.requestPermissions(
+            it,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+            1001  // Código de solicitud de permisos
+        )
+    }
+}
+
 // Función para obtener la ubicación actual
 private fun requestLocation(
     context: Context,
     fusedLocationClient: FusedLocationProviderClient,
     onLocationFound: (String?) -> Unit
 ) {
-    // Verificar si se tienen permisos de ubicación
     if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
         ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
     ) {
@@ -139,27 +176,14 @@ private fun requestLocation(
         return
     }
 
-    // Obtener la última ubicación
     fusedLocationClient.lastLocation.addOnSuccessListener { location ->
         location?.let {
             val geocoder = Geocoder(context, Locale.getDefault())
             val addresses: List<Address>? = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-
-            // Verificar si las direcciones no son nulas y obtener la primera
             val address: Address? = addresses?.firstOrNull()
-
-            // Si encontramos una dirección, la pasamos a la función de callback
             onLocationFound(address?.getAddressLine(0))
         } ?: run {
             Toast.makeText(context, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show()
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun WelcomeDeliveryScreenPreview() {
-    MysumativaTheme {
-        WelcomeDeliveryScreen(navController = rememberNavController())
     }
 }

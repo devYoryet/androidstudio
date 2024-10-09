@@ -3,6 +3,7 @@ package com.example.mysumativa.ui.screens
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -61,11 +62,28 @@ fun DeliveryScreen(navController: NavController) {
                     }
                 }
             }
+        } else {
+            // Mostrar mensaje si el permiso fue negado
+            Toast.makeText(context, "Permiso de ubicación denegado", Toast.LENGTH_SHORT).show()
         }
     }
 
+    // Verificar si los permisos ya están concedidos
     LaunchedEffect(Unit) {
-        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(
+                context, Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            locationPermissionGranted = true
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                userLocation = location?.let {
+                    LatLng(it.latitude, it.longitude)
+                }
+            }
+        } else {
+            // Lanzar el lanzador de permisos si no están concedidos
+            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
     }
 
     Scaffold(
@@ -187,12 +205,4 @@ fun DeliveryScreen(navController: NavController) {
             }
         }
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DeliveryScreenPreview() {
-    MysumativaTheme {
-        DeliveryScreen(navController = rememberNavController())
-    }
 }
